@@ -1,8 +1,8 @@
 package prompt
 
 import (
-	"github.com/elk-language/go-prompt/debug"
-	istrings "github.com/elk-language/go-prompt/strings"
+	"github.com/mu1ro/go.prompt/debug"
+	istrings "github.com/mu1ro/go.prompt/strings"
 )
 
 /*

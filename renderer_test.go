@@ -8,7 +8,7 @@ import (
 	"syscall"
 	"testing"
 
-	istrings "github.com/elk-language/go-prompt/strings"
+	istrings "github.com/mu1ro/go.prompt/strings"
 )
 
 func TestFormatCompletion(t *testing.T) {
@@ -74,7 +74,8 @@ func TestFormatCompletion(t *testing.T) {
 
 func TestBreakLineCallback(t *testing.T) {
 	var i int
-	r := NewRenderer()
+	pt := &Prompt{}
+	r := NewRenderer(pt)
 	r.out = &PosixWriter{
 		fd: syscall.Stdin, // "write" to stdin just so we don't mess with the output of the tests
 	}
@@ -129,7 +130,8 @@ func TestGetMultilinePrefix(t *testing.T) {
 		},
 	}
 
-	r := NewRenderer()
+	pt := &Prompt{}
+	r := NewRenderer(pt)
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			got := r.getMultilinePrefix(tc.prefix)

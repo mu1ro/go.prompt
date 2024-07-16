@@ -8,8 +8,8 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/elk-language/go-prompt/debug"
-	istrings "github.com/elk-language/go-prompt/strings"
+	"github.com/mu1ro/go.prompt/debug"
+	istrings "github.com/mu1ro/go.prompt/strings"
 )
 
 const inputBufferSize = 1024
@@ -57,6 +57,7 @@ type Prompt struct {
 	executeOnEnterCallback ExecuteOnEnterCallback
 	skipClose              bool
 	completionReset        bool
+	flagExecute            bool
 }
 
 // UserInput is the struct that contains the user input context.
@@ -188,7 +189,9 @@ func (p *Prompt) feed(b []byte) (shouldExit bool, rerender bool, userInput *User
 	switch key {
 	case Enter, ControlJ, ControlM:
 		indent, execute := p.executeOnEnterCallback(p, p.renderer.indentSize)
-		if !execute {
+		_ = execute
+		//if !execute {
+		if !p.flagExecute {
 			p.buffer.NewLine(cols, rows, false)
 
 			var indentStrBuilder strings.Builder
@@ -206,10 +209,15 @@ func (p *Prompt) feed(b []byte) (shouldExit bool, rerender bool, userInput *User
 		if userInput.input != "" {
 			p.history.Add(userInput.input)
 		}
+
 	case ControlC:
-		p.renderer.BreakLine(p.buffer, p.lexer)
-		p.buffer = NewBuffer()
-		p.history.Clear()
+		if p.buffer.Text() == "" {
+			return true, true, nil
+		} else {
+			p.renderer.BreakLine(p.buffer, p.lexer)
+			p.buffer = NewBuffer()
+			p.history.Clear()
+		}
 	case Up, ControlP:
 		line := p.buffer.Document().CursorPositionRow()
 		if line > 0 {
@@ -239,6 +247,9 @@ func (p *Prompt) feed(b []byte) (shouldExit bool, rerender bool, userInput *User
 		if newBuf, changed := p.history.Newer(p.buffer, cols, rows); changed {
 			p.buffer = newBuf
 		}
+		return false, true, nil
+	case AltBackspace:
+		p.flagExecute = !p.flagExecute
 		return false, true, nil
 	case ControlD:
 		if p.buffer.Text() == "" {
@@ -662,4 +673,9 @@ func (p *Prompt) Close() {
 		debug.AssertNoError(p.reader.Close())
 	}
 	p.renderer.Close()
+}
+
+// GetFlagExecute return flagExecute
+func (p *Prompt) GetFlagExecute() bool {
+	return p.flagExecute
 }

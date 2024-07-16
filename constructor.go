@@ -5,7 +5,7 @@ package prompt
 type Option func(prompt *Prompt) error
 
 // Callback function that returns a prompt prefix.
-type PrefixCallback func() (prefix string)
+type PrefixCallback func(p *Prompt) (prefix string)
 
 const DefaultIndentSize = 2
 
@@ -72,7 +72,7 @@ func WithTitle(t string) Option {
 // WithPrefix can be used to set a prefix string for the prompt.
 func WithPrefix(prefix string) Option {
 	return func(p *Prompt) error {
-		p.renderer.prefixCallback = func() string { return prefix }
+		p.renderer.prefixCallback = func(p *Prompt) string { return prefix }
 		return nil
 	}
 }
@@ -287,25 +287,25 @@ func WithExitChecker(fn ExitChecker) Option {
 }
 
 func DefaultExecuteOnEnterCallback(p *Prompt, indentSize int) (int, bool) {
-	return 0, true
+	return 0, p.flagExecute
 }
 
-func DefaultPrefixCallback() string {
+func DefaultPrefixCallback(p *Prompt) string {
 	return "> "
 }
 
 // New returns a Prompt with powerful auto-completion.
 func New(executor Executor, opts ...Option) *Prompt {
-	pt := &Prompt{
-		reader:                 NewStdinReader(),
-		renderer:               NewRenderer(),
-		buffer:                 NewBuffer(),
-		executor:               executor,
-		history:                NewHistory(),
-		completion:             NewCompletionManager(6),
-		executeOnEnterCallback: DefaultExecuteOnEnterCallback,
-		keyBindMode:            EmacsKeyBind, // All the above assume that bash is running in the default Emacs setting
-	}
+	pt := &Prompt{}
+	pt.reader = NewStdinReader()
+	pt.renderer = NewRenderer(pt)
+	pt.buffer = NewBuffer()
+	pt.executor = executor
+	pt.history = NewHistory()
+	pt.completion = NewCompletionManager(6)
+	pt.executeOnEnterCallback = DefaultExecuteOnEnterCallback
+	pt.keyBindMode = EmacsKeyBind // All the above assume that bash is running in the default Emacs setting
+	pt.flagExecute = true
 
 	for _, opt := range opts {
 		if err := opt(pt); err != nil {

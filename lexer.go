@@ -1,7 +1,7 @@
 package prompt
 
 import (
-	istrings "github.com/elk-language/go-prompt/strings"
+	istrings "github.com/mu1ro/go.prompt/strings"
 )
 
 // Lexer is a streaming lexer that takes in a piece of text

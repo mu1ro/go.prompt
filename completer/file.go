@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"runtime"
 
-	prompt "github.com/elk-language/go-prompt"
-	"github.com/elk-language/go-prompt/debug"
+	prompt "github.com/mu1ro/go.prompt"
+	"github.com/mu1ro/go.prompt/debug"
 )
 
 var (

@@ -4,14 +4,15 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/elk-language/go-prompt/debug"
-	istrings "github.com/elk-language/go-prompt/strings"
+	"github.com/mu1ro/go.prompt/debug"
+	istrings "github.com/mu1ro/go.prompt/strings"
 )
 
 const multilinePrefixCharacter = '.'
 
 // Takes care of the rendering process
 type Renderer struct {
+	prompt            *Prompt
 	out               Writer
 	prefixCallback    PrefixCallback
 	breakLineCallback func(*Document)
@@ -40,11 +41,12 @@ type Renderer struct {
 }
 
 // Build a new Renderer.
-func NewRenderer() *Renderer {
+func NewRenderer(p *Prompt) *Renderer {
 	defaultWriter := NewStdoutWriter()
 	registerWriter(defaultWriter)
 
 	return &Renderer{
+		prompt:                       p,
 		out:                          defaultWriter,
 		indentSize:                   DefaultIndentSize,
 		prefixCallback:               DefaultPrefixCallback,
@@ -111,7 +113,7 @@ func (r *Renderer) renderCompletion(buf *Buffer, completions *CompletionManager)
 	if len(suggestions) == 0 {
 		return
 	}
-	prefix := r.prefixCallback()
+	prefix := r.prefixCallback(r.prompt)
 	prefixWidth := istrings.GetWidth(prefix)
 	formatted, width := formatSuggestions(
 		suggestions,
@@ -204,7 +206,7 @@ func (r *Renderer) Render(buffer *Buffer, completion *CompletionManager, lexer L
 	r.clear(r.previousCursor)
 
 	text := buffer.Text()
-	prefix := r.prefixCallback()
+	prefix := r.prefixCallback(r.prompt)
 	prefixWidth := istrings.GetWidth(prefix)
 	col := r.col - prefixWidth
 	endLine := buffer.startLine + int(r.row) - 1
@@ -234,7 +236,7 @@ func (r *Renderer) renderText(lexer Lexer, input string, startLine int) {
 		return
 	}
 
-	prefix := r.prefixCallback()
+	prefix := r.prefixCallback(r.prompt)
 	prefixWidth := istrings.GetWidth(prefix)
 	col := r.col - prefixWidth
 	multilinePrefix := r.getMultilinePrefix(prefix)
@@ -341,7 +343,7 @@ func (r *Renderer) getMultilinePrefix(prefix string) string {
 // lex processes the given input with the given lexer
 // and writes the result
 func (r *Renderer) lex(lexer Lexer, input string, startLine int) {
-	prefix := r.prefixCallback()
+	prefix := r.prefixCallback(r.prompt)
 	prefixWidth := istrings.GetWidth(prefix)
 	col := r.col - prefixWidth
 	multilinePrefix := r.getMultilinePrefix(prefix)
@@ -459,7 +461,7 @@ func (r *Renderer) resetFormatting() {
 // BreakLine to break line.
 func (r *Renderer) BreakLine(buffer *Buffer, lexer Lexer) {
 	// Erasing and Renderer
-	prefix := r.prefixCallback()
+	prefix := r.prefixCallback(r.prompt)
 	prefixWidth := istrings.GetWidth(prefix)
 	cursor := positionAtEndOfString(buffer.Document().TextBeforeCursor(), r.col-prefixWidth)
 	cursor.X += prefixWidth
@@ -483,7 +485,7 @@ func (r *Renderer) BreakLine(buffer *Buffer, lexer Lexer) {
 // Get the number of columns that are available
 // for user input.
 func (r *Renderer) UserInputColumns() istrings.Width {
-	return r.col - istrings.GetWidth(r.prefixCallback())
+	return r.col - istrings.GetWidth(r.prefixCallback(r.prompt))
 }
 
 // clear erases the screen from a beginning of input
