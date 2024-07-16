@@ -3,9 +3,9 @@ package prompt
 import (
 	"testing"
 
-	istrings "github.com/mu1ro/go.prompt/strings"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	istrings "github.com/mu1ro/go.prompt/strings"
 )
 
 func TestEagerLexerNext(t *testing.T) {
