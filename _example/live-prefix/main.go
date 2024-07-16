@@ -32,7 +32,7 @@ func completer(in prompt.Document) ([]prompt.Suggest, istrings.RuneNumber, istri
 	return prompt.FilterHasPrefix(s, w, true), startIndex, endIndex
 }
 
-func changeLivePrefix() string {
+func changeLivePrefix(p *prompt.Prompt) string {
 	return LivePrefix
 }
 

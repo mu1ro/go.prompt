@@ -10,5 +10,5 @@ Change the following:
 
 Key Binding          | Description
 ---------------------|---------------------------------------------------------
-<kbd>Ctrl + C</kbd>  | Break Run() loop if no input, otherwise Clear the input buffer [**change**]
+<kbd>Ctrl + C</kbd>  | Break Run() loop if no input, otherwise Clear the input buffer
 <kbd>Alt  + BS</kbd> | Multiline mode toggle switch

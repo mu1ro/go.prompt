@@ -94,7 +94,7 @@ var suggestions = []prompt.Suggest{
 }
 
 func livePrefix(defaultPrefix string) prompt.PrefixCallback {
-	return func() string {
+	return func(p *prompt.Prompt) string {
 		if ctx.url.Path == "/" {
 			return defaultPrefix
 		}
