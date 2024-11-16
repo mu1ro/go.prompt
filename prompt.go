@@ -189,9 +189,7 @@ func (p *Prompt) feed(b []byte) (shouldExit bool, rerender bool, userInput *User
 	switch key {
 	case Enter, ControlJ, ControlM:
 		indent, execute := p.executeOnEnterCallback(p, p.renderer.indentSize)
-		_ = execute
-		//if !execute {
-		if !p.flagExecute {
+		if !p.flagExecute || !execute {
 			p.buffer.NewLine(cols, rows, false)
 
 			var indentStrBuilder strings.Builder
@@ -678,4 +676,9 @@ func (p *Prompt) Close() {
 // GetFlagExecute return flagExecute
 func (p *Prompt) GetFlagExecute() bool {
 	return p.flagExecute
+}
+
+// SetFlagExecute is set flagExecute
+func (p *Prompt) SetFlagExecute(b bool) {
+	p.flagExecute = b
 }
