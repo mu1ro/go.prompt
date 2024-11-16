@@ -248,7 +248,16 @@ func (p *Prompt) feed(b []byte) (shouldExit bool, rerender bool, userInput *User
 		return false, true, nil
 	case AltBackspace:
 		p.flagExecute = !p.flagExecute
-		return false, true, nil
+		if p.flagExecute == true {
+			p.renderer.BreakLine(p.buffer, p.lexer)
+			userInput = &UserInput{input: p.buffer.Text()}
+			p.buffer = NewBuffer()
+			if userInput.input != "" {
+				p.history.Add(userInput.input)
+			}
+		} else {
+			return false, true, nil
+		}
 	case ControlD:
 		if p.buffer.Text() == "" {
 			return true, true, nil
