@@ -251,7 +251,7 @@ func (p *Prompt) feed(b []byte) (shouldExit bool, rerender bool, userInput *User
 		return false, true, nil
 	case AltBackspace:
 		p.flagExecute = !p.flagExecute
-		if p.flagExecute == true {
+		if p.flagExecute {
 			p.renderer.BreakLine(p.buffer, p.lexer)
 			userInput = &UserInput{input: p.buffer.Text()}
 			p.buffer = NewBuffer()
